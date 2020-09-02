@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.extflightdelays.model.Model;
+import it.polito.tdp.extflightdelays.model.VelivoliAdiacenti;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,7 +29,7 @@ public class FXMLController {
     private Button btnCreaGrafo;
 
     @FXML
-    private ComboBox<?> cmbBoxStati;
+    private ComboBox<String> cmbBoxStati;
 
     @FXML
     private Button btnVisualizzaVelivoli;
@@ -44,16 +45,60 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
+    	
+    	this.model.creaGrafo();
+    	this.cmbBoxStati.getItems().clear();
+    	this.cmbBoxStati.getItems().addAll(this.model.getVertex());
+    	txtResult.appendText("Grafo creato!\n"+"#Vertici = "+this.model.getVertex().size()+" #Archi = "+this.model.getEdge().size());
 
     }
 
     @FXML
     void doSimula(ActionEvent event) {
+    	txtResult.clear();
+    	String stato = this.cmbBoxStati.getValue();
+    	
+    	if(stato == null) {
+    		txtResult.appendText("Scegliere uno stato!");
+    		return;
+    	}
+    	
+    	String gi = this.txtG.getText();
+    	String ti = this.txtT.getText();
+    	Integer T;
+    	Integer G;
+    	if(gi == null || ti == null) {
+    		txtResult.appendText("Scegliere uno stato!");
+    		return;
+    	}
+    	try {
+    		T = Integer.parseInt(ti);
+    		G = Integer.parseInt(gi);
+    		
+    	}catch (IllegalArgumentException e) {
+        	txtResult.appendText("Inserire valore numerico!");
+        	return;
+        }
+    	
+    	txtResult.appendText(this.model.simula(T, G, stato).entrySet()+"\n");
 
     }
 
     @FXML
     void doVisualizzaVelivoli(ActionEvent event) {
+    	txtResult.clear();
+    	
+    	String stato = this.cmbBoxStati.getValue();
+    	
+    	if(stato == null) {
+    		txtResult.appendText("Scegliere uno stato!");
+    		return;
+    	}
+    	
+    	for(VelivoliAdiacenti v: this.model.getVelivoli(stato)) {
+    		txtResult.appendText(v.toString()+"\n");
+    	}
 
     }
 
